@@ -1,0 +1,178 @@
+﻿<div id="app">
+    <div class="jumbotron">
+        <h1 class="title">St. Mary's Food Bank</h1>
+        <p class="subtitle">
+            Every <strong>dollar</strong> helps those struggling with food security!
+        </p>
+    </div>
+
+    <!-- form starts here -->
+    <form id="donor-form">
+
+        <div class="form-group offset-xl-3 col-xl-6">
+            <label class="label">First Name</label>
+            <input v-model="form.firstName" name="firstName" class="form-control" type="text" placeholder="First Name"
+                   required minlength="2" maxlength="50">
+        </div>
+        <div class="form-group offset-xl-3 col-xl-6">
+            <label class="label">Last Name</label>
+            <input v-model="form.lastName" name="lastName" class="form-control" type="text" placeholder="Last Name"
+                   required minlength="2" maxlength="50">
+        </div>
+        <div class="form-group offset-xl-3 col-xl-6">
+            <label class="label">Email</label>
+            <input v-model="form.email" name="email" class="form-control" type="email" placeholder="Email" required
+                   pattern="^[A-Za-z0-9._%-]+@@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$"
+                   title="Please enter a valid email.">
+        </div>
+        <div class="form-group offset-xl-3 col-xl-6">
+            <label class="label">Street Address</label>
+            <input v-model="form.streetAddress" name="streetAddress" class="form-control" type="text" placeholder="Street Address" required>
+        </div>
+        <div class="form-group offset-xl-3 col-xl-6">
+            <label class="label">City</label>
+            <input v-model="form.city" name="city" class="form-control" type="text" placeholder="City" required>
+        </div>
+        <div class="offset-xl-3 col-xl-6">
+            <div class="row">
+                <div class="col">
+                    <label class="label">State (2 letter abbrev.)</label>
+                    <input v-model="form.state" name="state" class="form-control text-uppercase" type="text" placeholder="XX"
+                           title="A valid U.S. state abbreviation code, e.g. AZ - Arizona, CA- California"
+                           required pattern="[A-Za-z]{2}">
+                </div>
+                <div class="col">
+                    <label class="label">Zip Code</label>
+                    <input v-model="form.zipCode" name="zipCode" class="form-control" type="text" placeholder="xxxxx"
+                           required pattern="[0-9]{5}">
+                </div>
+            </div>
+        </div>
+        <div class="form-group offset-xl-3 col-xl-6">
+            <label class="label">Donation Amount</label>
+            <input v-model.number="form.amount" name="amount" class="form-control" type="number" min="1" step="0.01"
+                   placeholder="Dollar Amount" required pattern="\d+\.\d{2}">
+        </div>
+        <div class="form-group offset-xl-3 col-xl-6">
+            <label class="label">Credit Card Number:</label>
+            <input v-model="form.creditCardNumber" name="creditCardNumber" class="form-control" type="tel" inputmode="numeric" required
+                   pattern="[0-9\s]{13,19}" autocomplete="cc-number" maxlength="19" placeholder="xxxx xxxx xxxx xxxx">
+        </div>
+        <div class="offset-xl-3 col-xl-6">
+            <div class="row">
+                <div class="col">
+                    <label class="label">
+                        Expiration Month
+                    </label>
+                    <select class="form-control"
+                            id="expiryMonth"
+                            name="expiryMonth"
+                            v-model="form.expiryMonth"
+                            required>
+                        <option value="" disabled selected>Month</option>
+                        <option v-for="n in 12"
+                                :value="n < 10 ? '0' + n : n"
+                                :key="n">
+                            {{ 10 > n ? "0" + n : n }}
+                        </option>
+                    </select>
+                </div>
+                <div class="col">
+                    <label class="label">
+                        Expiration Year
+                    </label>
+                    <select class="form-control"
+                            id="expiryYear"
+                            name="expiryYear"
+                            v-model="form.expiryYear"
+                            required>
+                        <option value="" disabled selected>Year</option>
+                        <option v-for="(n, $index) in 12"
+                                :value="$index + currentYear"
+                                :key="n">
+                            {{ $index + currentYear }}
+                        </option>
+                    </select>
+                </div>
+                <div class="col">
+                    <label class="label">CCV:</label>
+                    <input v-model="form.ccv" name="cvv" class="form-control" type="tel" inputmode="numeric"
+                           required pattern="[0-9\s]{3}" maxlength="3" placeholder="xxx">
+                </div>
+            </div>
+        </div>
+        <br />
+        <div class="form-check offset-xl-3 col-xl-6">
+            <label class="form-check-label">
+                <input v-model="coverCosts" v-on:change="toggleCoverCosts" type="checkbox" class="form-check-input" />
+                I would like to cover the processing costs of 2.9% + flat fee 30 cents
+            </label>
+        </div>
+        <br />
+        <div class="col text-center">
+            <button v-on:click="submitForm" type="button" class="btn btn-primary">Submit</button>
+        </div>
+    </form>
+</div>
+
+@section Scripts{
+    <script>
+
+        new Vue({
+            el: '#app',
+            data: {
+                form: {
+                    firstName: '',
+                    lastName: '',
+                    email: '',
+                    streetAddress: '',
+                    city: '',
+                    state: '',
+                    zip: '',
+                    amount: '',
+                    creditCardNumber: '',
+                    expiryMonth: '',
+                    expiryYear: '',
+                    cvv: ''
+                },
+                currentYear: new Date().getFullYear(),
+                coverCosts: false
+            },
+            methods: {
+                toggleCoverCosts: function (event) {
+                    if (this.coverCosts) {
+                        this.form.amount = (this.form.amount + this.form.amount * 0.029 + 0.30).toFixed(2);
+                    }
+                    else {
+                        this.form.amount = ((this.form.amount - 0.30) / 1.029).toFixed(2);
+                    }
+                },
+                submitForm: async function (event) {
+                    const donorForm = document.getElementById('donor-form');
+                    if (donorForm.checkValidity() == false) {
+                        var list = donorForm.querySelectorAll(':invalid');
+                        var index = list.length;
+                        while (index--)
+                            list[index].focus();
+                    }
+                    else {
+                        const response = await fetch("/Home/Donate", {
+                            method: "POST",
+                            body: new URLSearchParams([...(new FormData(donorForm))]),
+                        });
+                        if (response.ok) {
+                            const jsonResponse = await response.json();
+                            if (jsonResponse.success == true) {
+                                window.location.href = "/Home/ThankYou";
+                            }
+                            else {
+                                alert("Error occurred.");
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+    </script>
+} 
