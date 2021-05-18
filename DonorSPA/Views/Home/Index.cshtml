@@ -37,25 +37,25 @@
             <div class="row">
                 <div class="col">
                     <label class="label">State (2 letter abbrev.)</label>
-                    <input v-model="form.state" name="state" class="form-control text-uppercase" type="text" placeholder="XX"
+                    <input v-model="form.state" v-mask="'SS'" name="state" class="form-control text-uppercase" type="text" placeholder="XX"
                            title="A valid U.S. state abbreviation code, e.g. AZ - Arizona, CA- California"
                            required pattern="[A-Za-z]{2}">
                 </div>
                 <div class="col">
                     <label class="label">Zip Code</label>
-                    <input v-model="form.zipCode" name="zipCode" class="form-control" type="text" placeholder="xxxxx"
+                    <input v-model="form.zipCode" v-mask="'#####'" name="zipCode" class="form-control" type="text" placeholder="xxxxx"
                            required pattern="[0-9]{5}">
                 </div>
             </div>
         </div>
         <div class="form-group offset-xl-3 col-xl-6">
             <label class="label">Donation Amount</label>
-            <input v-model.number="form.amount" name="amount" class="form-control" type="number" min="1" step="0.01"
-                   placeholder="Dollar Amount" required pattern="\d+\.\d{2}">
+            <input v-model.number="form.amount" v-money="money" name="amount" type="number"  min="0.01" class="form-control"
+                   required pattern="\d+\.\d{2}">
         </div>
         <div class="form-group offset-xl-3 col-xl-6">
             <label class="label">Credit Card Number:</label>
-            <input v-model="form.creditCardNumber" name="creditCardNumber" class="form-control" type="tel" inputmode="numeric" required
+            <input v-model="form.creditCardNumber" v-mask="'#### #### #### ####'" name="creditCardNumber" class="form-control" type="tel" inputmode="numeric" required
                    pattern="[0-9\s]{13,19}" autocomplete="cc-number" maxlength="19" placeholder="xxxx xxxx xxxx xxxx">
         </div>
         <div class="offset-xl-3 col-xl-6">
@@ -96,7 +96,7 @@
                 </div>
                 <div class="col">
                     <label class="label">CCV:</label>
-                    <input v-model="form.ccv" name="cvv" class="form-control" type="tel" inputmode="numeric"
+                    <input v-model="form.ccv" v-mask="'###'" name="cvv" class="form-control" type="tel" inputmode="numeric"
                            required pattern="[0-9\s]{3}" maxlength="3" placeholder="xxx">
                 </div>
             </div>
@@ -116,6 +116,10 @@
 </div>
 
 @section Scripts{
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.3.4/vue.min.js"></script>
+    <script src="https://unpkg.com/vue-the-mask@0.11.1/dist/vue-the-mask.js"></script>
+    <script src="https://rawgit.com/vuejs-tips/v-money/master/dist/v-money.js"></script>
+
     <script>
 
         new Vue({
@@ -136,7 +140,11 @@
                     cvv: ''
                 },
                 currentYear: new Date().getFullYear(),
-                coverCosts: false
+                coverCosts: false,
+                money: {
+                    precision: 2,
+                    masked: false
+                }
             },
             methods: {
                 toggleCoverCosts: function (event) {
