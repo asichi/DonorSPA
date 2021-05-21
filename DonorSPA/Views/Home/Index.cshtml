@@ -50,8 +50,7 @@
         </div>
         <div class="form-group offset-xl-3 col-xl-6">
             <label class="label">Donation Amount</label>
-            <input v-model.number="form.amount" v-money="money" name="amount" type="number"  min="0.01" class="form-control"
-                   required pattern="\d+\.\d{2}">
+            <input v-model.number="form.amount" v-currency="{currency: null, locale: 'en'}" name="amount" class="form-control" required>
         </div>
         <div class="form-group offset-xl-3 col-xl-6">
             <label class="label">Credit Card Number:</label>
@@ -118,7 +117,7 @@
 @section Scripts{
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.3.4/vue.min.js"></script>
     <script src="https://unpkg.com/vue-the-mask@0.11.1/dist/vue-the-mask.js"></script>
-    <script src="https://rawgit.com/vuejs-tips/v-money/master/dist/v-money.js"></script>
+    <script src="https://unpkg.com/vue-currency-input"></script>
 
     <script>
 
@@ -140,19 +139,19 @@
                     cvv: ''
                 },
                 currentYear: new Date().getFullYear(),
-                coverCosts: false,
-                money: {
-                    precision: 2,
-                    masked: false
-                }
+                coverCosts: false
             },
             methods: {
                 toggleCoverCosts: function (event) {
                     if (this.coverCosts) {
-                        this.form.amount = (this.form.amount + this.form.amount * 0.029 + 0.30).toFixed(2);
-                    }
+                        const value = parseFloat(this.form.amount);
+                        console.log(value);
+                        this.form.amount = (value + value * 0.029 + 0.30).toFixed(2);
+                    } 
                     else {
-                        this.form.amount = ((this.form.amount - 0.30) / 1.029).toFixed(2);
+                        const value = parseFloat(this.form.amount);
+                        console.log(value);
+                        this.form.amount = ((value - 0.30) / 1.029).toFixed(2);
                     }
                 },
                 submitForm: async function (event) {
